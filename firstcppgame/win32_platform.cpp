@@ -1,6 +1,6 @@
 #include "utils.cpp"
 #include <windows.h>
-
+//1:43 #4
 global_variable bool running = true;
 struct Render_State {
 	int height, width;
@@ -66,6 +66,18 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 
 	Input input = {};
 
+	float delta_time = 0.016666f;
+	LARGE_INTEGER frame_begin_time;
+	QueryPerformanceCounter(&frame_begin_time);
+
+	float performance_frequency;
+	{
+		LARGE_INTEGER perf;
+		QueryPerformanceFrequency(&perf);
+		performance_frequency = (float)perf.QuadPart;
+	}
+
+
 	while (running) {
 		// Input
 		MSG message;
@@ -84,8 +96,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 
 #define process_button(b, vk)\
 case vk: {\
+input.buttons[b].changed = is_down != input.buttons[b].is_down;\
 input.buttons[b].is_down = is_down;\
-input.buttons[b].changed = true;\
 } break;
 
 
@@ -105,9 +117,14 @@ input.buttons[b].changed = true;\
 		}
 
 		// Simulate
-		simulate_game(&input);
+		simulate_game(&input, delta_time);
 
 		//Render
 		StretchDIBits(hdc, 0, 0, render_state.width, render_state.height, 0, 0, render_state.width, render_state.height, render_state.memory, &render_state.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+
+		LARGE_INTEGER frame_end_time;
+		QueryPerformanceCounter(&frame_end_time);
+		delta_time = (float)(frame_end_time.QuadPart - frame_begin_time.QuadPart) /performance_frequency;
+		frame_begin_time = frame_end_time;
 	}
 }
