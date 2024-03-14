@@ -16,4 +16,3 @@ clamp(int min, int val, int max) {
 	if (val > max) return max;
 	return val;
 }
-//15:26 youtube
