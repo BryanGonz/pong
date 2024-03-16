@@ -15,3 +15,11 @@ enum {
 struct Input {
 	Button_State buttons[BUTTON_COUNT];
 };
+
+/*
+class BubbleMan {
+	int pos_x, pos_y, height, widgth;
+	public:
+
+};
+*/
